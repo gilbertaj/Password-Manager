@@ -37,7 +37,7 @@ class FingerprintHandler extends FingerprintManager.AuthenticationCallback {
     @Override
     public void onAuthenticationSucceeded(FingerprintManager.AuthenticationResult result) {
         super.onAuthenticationSucceeded(result);
-        context.startActivity(new Intent(context,HomeActivity.class));
+        context.startActivity(new Intent(context,LoginActivity.class));
     }
 
 }
