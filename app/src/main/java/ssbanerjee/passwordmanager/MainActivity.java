@@ -34,6 +34,8 @@ public class MainActivity extends AppCompatActivity {
     private static final String KEY_NAME = "EDMTDev";
     private Cipher cipher;
     private TextView textView;
+    FingerprintHandler helper;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +47,17 @@ public class MainActivity extends AppCompatActivity {
             finish();
         }
 
+        fingerPrint();
+
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        fingerPrint();
+    }
+
+    private void fingerPrint() {
         KeyguardManager keyguardManager = (KeyguardManager) getSystemService(KEYGUARD_SERVICE);
         FingerprintManager fingerprintManager = (FingerprintManager) getSystemService(FINGERPRINT_SERVICE);
 
@@ -66,7 +79,7 @@ public class MainActivity extends AppCompatActivity {
 
                 if (cipherInit()) {
                     FingerprintManager.CryptoObject cryptoObject = new FingerprintManager.CryptoObject(cipher);
-                    FingerprintHandler helper = new FingerprintHandler(this);
+                    helper = new FingerprintHandler(this);
                     helper.startAuthentication(fingerprintManager, cryptoObject);
                 }
             }
