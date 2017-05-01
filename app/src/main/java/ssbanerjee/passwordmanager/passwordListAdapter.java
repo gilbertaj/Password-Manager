@@ -43,9 +43,28 @@ public class passwordListAdapter extends BaseAdapter {
         TextView vName = (TextView) v.findViewById(R.id.itemName);
         vName.setText(list.get(position).getName());
 
-        TextView vPassword = (TextView) v.findViewById(R.id.itempassword);
+        final TextView vPassword = (TextView) v.findViewById(R.id.itempassword);
         vPassword.setText(list.get(position).getPassword());
 
+        v.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                return false;
+            }
+        });
+
+
+        v.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(vPassword.getVisibility() == View.GONE){
+                    vPassword.setVisibility(View.VISIBLE);
+                } else if (vPassword.getVisibility() == View.VISIBLE){
+                    vPassword.setVisibility(View.GONE);
+                }
+
+            }
+        });
 
         return v;
     }

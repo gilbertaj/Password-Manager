@@ -9,9 +9,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Base64;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -26,6 +28,7 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
     Crypto crypto = new Crypto();
     Button addButton;
     Button clearAll;
+    Button changeButton;
     ListView passwordList;
     private List<passwordItem> myItems;
 
@@ -41,8 +44,16 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
         addButton.setOnClickListener(this);
         clearAll = (Button) findViewById(R.id.clearAllPasswordsButton);
         clearAll.setOnClickListener(this);
+        changeButton = (Button) findViewById(R.id.changePasswordButton);
+        changeButton.setOnClickListener(this);
         passwordList = (ListView) findViewById(R.id.passwordList);
-
+        passwordList.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, int position, long id) {
+                longClick(position);
+                return true;
+            }
+        });
         updateList();
     }
 
@@ -58,6 +69,7 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
         passwordListAdapter adapter;
         adapter = new passwordListAdapter(getApplicationContext(), myItems);
         passwordList.setAdapter(adapter);
+
     }
 
     private ArrayList getInfo() {
@@ -90,6 +102,11 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
     public void onClick(View v) {
         if(v.getId() == R.id.addPasswordButton) {
             Intent i = new Intent(PasswordListActivity.this, AddPassword.class);
+            startActivity(i);
+        }
+
+        if(v.getId() == R.id.changePasswordButton) {
+            Intent i = new Intent(PasswordListActivity.this, ChangePassword.class);
             startActivity(i);
         }
 
@@ -163,5 +180,59 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
         i.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         i.putExtra("EXIT", true);
         startActivity(i);
+    }
+
+
+
+    private void longClick(int position) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setMessage("Are you sure that you want to delete this password?");
+        builder.setCancelable(true);
+        final int pos = position;
+
+        builder.setPositiveButton("Yes",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        deleteItem(pos);
+                        dialog.cancel();
+
+                    }
+                });
+        builder.setNegativeButton("No",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                });
+
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    private void deleteItem(int position) {
+
+        myItems.remove(position);
+
+        String result = "";
+        for(passwordItem e : myItems) {
+            String encrypted = "";
+            try {
+                encrypted = crypto.encrypt(e.getPassword());
+            } catch (Exception f) {
+                f.printStackTrace();
+            }
+            result = String.format("%s%s%s%s%s", result, e.getName(), DELIMITER,
+                    encrypted, ITEM_DELIMITER);
+        }
+
+        result = result.substring(0, result.length()-1);
+
+        editor.putString("Data", result);
+        editor.apply();
+
+
+        updateList();
     }
 }
