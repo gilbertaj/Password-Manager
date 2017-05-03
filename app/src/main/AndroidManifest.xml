@@ -24,7 +24,8 @@
         <activity android:name=".LoginActivity" />
         <activity android:name=".PasswordListActivity" />
         <activity android:name=".AddPassword" />
-        <activity android:name=".ChangePassword"></activity>
+        <activity android:name=".ChangePassword" />
+        <activity android:name=".EditPassword"></activity>
     </application>
 
 </manifest>

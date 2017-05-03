@@ -74,6 +74,7 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
 
     private ArrayList getInfo() {
         String rawData = sharedPreferences.getString("Data", "");
+        System.out.println(rawData);
         if(rawData.length() == 0) {
             return new ArrayList<>();
         } else {
@@ -186,7 +187,7 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
 
     private void longClick(int position) {
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
-        builder.setMessage("Are you sure that you want to delete this password?");
+        builder.setMessage("Are you sure that you want to change this password?");
         builder.setCancelable(true);
         final int pos = position;
 
@@ -194,9 +195,11 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
                 new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
-                        deleteItem(pos);
+//                        deleteItem(pos);
+                        Intent i = new Intent(PasswordListActivity.this, EditPassword.class);
+                        i.putExtra("position", pos);
+                        startActivity(i);
                         dialog.cancel();
-
                     }
                 });
         builder.setNegativeButton("No",
@@ -211,28 +214,4 @@ public class PasswordListActivity extends AppCompatActivity implements View.OnCl
         alert.show();
     }
 
-    private void deleteItem(int position) {
-
-        myItems.remove(position);
-
-        String result = "";
-        for(passwordItem e : myItems) {
-            String encrypted = "";
-            try {
-                encrypted = crypto.encrypt(e.getPassword());
-            } catch (Exception f) {
-                f.printStackTrace();
-            }
-            result = String.format("%s%s%s%s%s", result, e.getName(), DELIMITER,
-                    encrypted, ITEM_DELIMITER);
-        }
-
-        result = result.substring(0, result.length()-1);
-
-        editor.putString("Data", result);
-        editor.apply();
-
-
-        updateList();
-    }
 }

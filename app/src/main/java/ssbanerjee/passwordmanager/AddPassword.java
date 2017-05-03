@@ -6,8 +6,11 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import java.util.Random;
 
 public class AddPassword extends AppCompatActivity implements View.OnClickListener{
     private SharedPreferences sharedPreferences;
@@ -18,8 +21,11 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
     Crypto crypto = new Crypto();
     Button backButton;
     Button saveButton;
+    Button randomButton;
     EditText nameField;
     EditText passwordField;
+    EditText lengthField;
+    CheckBox specialCharacters;
 
 
     @Override
@@ -34,8 +40,13 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
         backButton.setOnClickListener(this);
         saveButton = (Button) findViewById(R.id.saveButton);
         saveButton.setOnClickListener(this);
+        randomButton = (Button) findViewById(R.id.AddPasswordRandomButton);
+        randomButton.setOnClickListener(this);
         nameField = (EditText) findViewById(R.id.nameEdit);
         passwordField = (EditText) findViewById(R.id.passEdit);
+        lengthField = (EditText) findViewById(R.id.AddPasswordLength);
+        specialCharacters = (CheckBox) findViewById(R.id.AddPasswordSpecialCharactersCheck);
+        specialCharacters.setOnClickListener(this);
 
     }
 
@@ -74,6 +85,10 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
             super.onBackPressed();
             finish();
         }
+        if(v.getId() == R.id.AddPasswordRandomButton) {
+            boolean checked = specialCharacters.isChecked();
+            randomPassword(checked);
+        }
     }
 
     private void addData(String name, String password) {
@@ -101,5 +116,38 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
             editor.apply();
             return;
         }
+    }
+
+    private void randomPassword(boolean checked) {
+        Random random = new Random();
+        int length;
+        System.out.println("Special Characters Checkbox: " + checked);
+        String characters;
+        if(checked) {
+            characters = "0123456789abcdefghijklmnopqrstuvwxyz" +
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ !#$%&'()*+,-./:;<=>?@[]^_`{|}~";
+            characters = characters + '"';
+        } else {
+            characters = "0123456789abcdefghijklmnopqrstuvwxyz" +
+                    "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        }
+        if(lengthField.getText().toString().length() == 0) {
+            length = random.nextInt(11) + 10;
+        } else {
+            try {
+                length = Integer.parseInt(lengthField.getText().toString());
+            } catch (Exception e) {
+                Toast.makeText(this, "Please enter in a valid length", Toast.LENGTH_SHORT).show();
+                lengthField.setText("");
+                return;
+            }
+        }
+
+        String result = "";
+        for(int i = 0; i < length; i++) {
+            int next = random.nextInt(characters.length());
+            result = result + characters.charAt(next);
+        }
+        passwordField.setText(result);
     }
 }

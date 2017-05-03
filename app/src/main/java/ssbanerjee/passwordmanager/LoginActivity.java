@@ -82,7 +82,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
 
     private boolean verifyLogin(String password) throws Exception {
         String message = sharedPreferences.getString("verify", "");
-
+        System.out.println(message);
         if(message.length() == 0) {
             byte[] salt = crypto.makeSalt();
             crypto.makeKey(password, salt);
