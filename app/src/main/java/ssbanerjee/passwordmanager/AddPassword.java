@@ -10,6 +10,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class AddPassword extends AppCompatActivity implements View.OnClickListener{
@@ -19,6 +21,7 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
     private static final String ITEM_DELIMITER = "]";
 
     Crypto crypto = new Crypto();
+    private List<passwordItem> myItems;
     Button backButton;
     Button saveButton;
     Button randomButton;
@@ -47,6 +50,8 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
         lengthField = (EditText) findViewById(R.id.AddPasswordLength);
         specialCharacters = (CheckBox) findViewById(R.id.AddPasswordSpecialCharactersCheck);
         specialCharacters.setOnClickListener(this);
+
+        myItems = getInfo();
 
     }
 
@@ -82,8 +87,6 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
             }
 
             addData(name, password);
-            super.onBackPressed();
-            finish();
         }
         if(v.getId() == R.id.AddPasswordRandomButton) {
             boolean checked = specialCharacters.isChecked();
@@ -92,6 +95,19 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
     }
 
     private void addData(String name, String password) {
+        if(myItems.size() > 0) {
+            for (int i = 0; i < myItems.size(); i++) {
+                if (myItems.get(i).getName().equals(name) && myItems.get(i).getPassword().equals(password)) {
+                    Toast.makeText(this, "You already have this Service Name and Password stored",
+                            Toast.LENGTH_SHORT).show();
+                    passwordField.setText("");
+                    nameField.setText("");
+                    return;
+                }
+            }
+        }
+
+
         String rawData = sharedPreferences.getString("Data", "");
         if(rawData.length() == 0) {
             String encrypted = "";
@@ -103,6 +119,8 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
             String result = String.format("%s%s%s", name, DELIMITER, encrypted);
             editor.putString("Data", result);
             editor.apply();
+            super.onBackPressed();
+            finish();
             return;
         } else {
             String encrypted = "";
@@ -114,14 +132,40 @@ public class AddPassword extends AppCompatActivity implements View.OnClickListen
             String result = String.format("%s%s%s%s%s", rawData, ITEM_DELIMITER, name, DELIMITER, encrypted);
             editor.putString("Data", result);
             editor.apply();
-            return;
+
+            super.onBackPressed();
+            finish();
+        }
+    }
+
+    private ArrayList getInfo() {
+        String rawData = sharedPreferences.getString("Data", "");
+        if(rawData.length() == 0) {
+            return new ArrayList<>();
+        } else {
+            ArrayList<passwordItem> list = new ArrayList<>();
+            String[] first = rawData.split(ITEM_DELIMITER);
+
+            for(int i = 0; i < first.length; i++) {
+                String[] second = first[i].split(DELIMITER);
+                String name = second[0];
+                String test = String.format("%s%s%s", second[1], DELIMITER, second[2]);
+                String password = "";
+                try {
+                    password = crypto.decrypt(test);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                list.add(new passwordItem(name, password));
+            }
+
+            return list;
         }
     }
 
     private void randomPassword(boolean checked) {
         Random random = new Random();
         int length;
-        System.out.println("Special Characters Checkbox: " + checked);
         String characters;
         if(checked) {
             characters = "0123456789abcdefghijklmnopqrstuvwxyz" +

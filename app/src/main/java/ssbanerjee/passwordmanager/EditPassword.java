@@ -73,7 +73,6 @@ public class EditPassword extends AppCompatActivity implements View.OnClickListe
 
     private ArrayList getInfo() {
         String rawData = sharedPreferences.getString("Data", "");
-        System.out.println(rawData);
         if(rawData.length() == 0) {
             return new ArrayList<>();
         } else {
@@ -197,8 +196,18 @@ public class EditPassword extends AppCompatActivity implements View.OnClickListe
         if(name.contains("~")) {
             Toast.makeText(this, "Service Name can not use '~' character",
                     Toast.LENGTH_SHORT).show();
-            serviceNameField.setText("");
+            serviceNameField.setText(myItems.get(position).getName());
             return;
+        }
+
+        for(int i = 0; i < myItems.size(); i++) {
+            if(myItems.get(i).getName().equals(name) && myItems.get(i).getPassword().equals(password) && i != position) {
+                Toast.makeText(this, "You already have this Service Name and Password stored",
+                        Toast.LENGTH_SHORT).show();
+                passwordField.setText(myItems.get(position).getPassword());
+                serviceNameField.setText(myItems.get(position).getName());
+                return;
+            }
         }
 
         myItems.get(position).setName(serviceNameField.getText().toString());
@@ -235,10 +244,26 @@ public class EditPassword extends AppCompatActivity implements View.OnClickListe
         editor.apply();
     }
 
+    /*
+    ⊂_ヽ
+    　 ＼＼ Λ＿Λ
+    　　 ＼(　ˇωˇ)　
+    　　　 >　⌒ヽ
+    　　　/ 　 へ＼
+    　　 /　　/　＼＼
+    　　 ﾚ　ノ　　 ヽ_つ
+    　　/　/
+    　 /　/|
+    　(　(ヽ
+    　|　|、＼
+    　| 丿 ＼ ⌒)
+    　| |　　) /
+    `ノ )　　Lﾉ
+    (_／
+     */
     private void randomPassword(boolean checked) {
         Random random = new Random();
         int length;
-        System.out.println("Special Characters Checkbox: " + checked);
         String characters;
         if(checked) {
             characters = "0123456789abcdefghijklmnopqrstuvwxyz" +

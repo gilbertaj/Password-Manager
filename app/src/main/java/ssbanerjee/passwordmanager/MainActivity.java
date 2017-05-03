@@ -31,11 +31,10 @@ import javax.crypto.SecretKey;
 public class MainActivity extends AppCompatActivity {
 
     private KeyStore keyStore;
-    private static final String KEY_NAME = "EDMTDev";
+    private static final String KEY_NAME = "8l@ckj@cK";
     private Cipher cipher;
     private TextView textView;
     FingerprintHandler helper;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -75,6 +74,7 @@ public class MainActivity extends AppCompatActivity {
                     Toast.makeText(this, "Lock screen security not enabled in Settings", Toast.LENGTH_SHORT).show();
                 } else {
                     genKey();
+
                 }
 
                 if (cipherInit()) {
@@ -85,6 +85,24 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+    /*
+   ⊂_ヽ
+   　 ＼＼ Λ＿Λ
+   　　 ＼(　ˇωˇ)　
+   　　　 >　⌒ヽ
+   　　　/ 　 へ＼
+   　　 /　　/　＼＼
+   　　 ﾚ　ノ　　 ヽ_つ
+   　　/　/
+   　 /　/|
+   　(　(ヽ
+   　|　|、＼
+   　| 丿 ＼ ⌒)
+   　| |　　) /
+   `ノ )　　Lﾉ
+   (_／
+    */
 
     private boolean cipherInit() {
         try {
@@ -157,3 +175,4 @@ public class MainActivity extends AppCompatActivity {
 
     }
 }
+
